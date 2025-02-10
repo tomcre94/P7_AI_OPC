@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, jsonify
 import pickle
 import re
 import nltk
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 import tensorflow as tf
@@ -9,10 +14,6 @@ import tensorflow_hub as hub
 
 
 app = Flask(__name__)
-
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
 
 # Dictionnaire pour stocker les prédictions associées à chaque tweet
 prediction_cache = {}
