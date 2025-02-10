@@ -12,17 +12,22 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 import tensorflow as tf
 import tensorflow_hub as hub
 
-import nltk
-import os
-# Définir un répertoire personnalisé pour les données NLTK
+# Définir le répertoire NLTK
 nltk_data_dir = os.path.join(os.getcwd(), "nltk_data")
 os.makedirs(nltk_data_dir, exist_ok=True)
 nltk.data.path.append(nltk_data_dir)
 
-# Télécharger les ressources NLTK nécessaires
-nltk.download('punkt', download_dir=nltk_data_dir)
-nltk.download('stopwords', download_dir=nltk_data_dir)
-nltk.download('wordnet', download_dir=nltk_data_dir)
+# Fonction pour télécharger les ressources NLTK de manière sécurisée
+def download_nltk_data():
+    resources = ['punkt', 'stopwords', 'wordnet', 'omw-1.4']
+    for resource in resources:
+        try:
+            nltk.data.find(f'tokenizers/{resource}')
+        except LookupError:
+            nltk.download(resource, download_dir=nltk_data_dir)
+
+# Télécharger les données au démarrage
+download_nltk_data()
 
 app = Flask(__name__)
 
