@@ -11,6 +11,7 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 import tensorflow as tf
 import tensorflow_hub as hub
+import os
 
 # Définir le répertoire NLTK
 nltk_data_dir = os.path.join(os.getcwd(), "nltk_data")
