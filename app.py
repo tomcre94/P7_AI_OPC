@@ -84,7 +84,10 @@ def feedbacknegatif():
     data = request.get_json()
     tweet_text = data.get('tweet_to_predict')
 
-    app.logger.error(f'{tweet_text}: {prediction_cache[tweet_text]}')
+    if tweet_text in prediction_cache:
+        app.logger.error(f'{tweet_text}: {prediction_cache[tweet_text]}')
+    else:
+        app.logger.error(f'Tweet non trouvé dans le cache: {tweet_text}')
 
     return "true"
 
