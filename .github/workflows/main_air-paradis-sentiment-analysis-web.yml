@@ -32,6 +32,11 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download NLTK data
+        run: |
+          mkdir -p nltk_data
+          python -c "import nltk; nltk.download('punkt', download_dir='./nltk_data'); nltk.download('stopwords', download_dir='./nltk_data'); nltk.download('wordnet', download_dir='./nltk_data')"
+
       - name: Run unit tests
         run: |
           python -m unittest test_app.py
