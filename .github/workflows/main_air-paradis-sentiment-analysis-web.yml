@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - Air-Paradis-Sentiment-Analysis-WEB
+name: Build and deploy Python app to Azure Web App - P7AIOPC
 
 on:
   push:
@@ -20,20 +20,20 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10'
 
       - name: Create and start virtual environment
         run: |
           python -m venv antenv
           source antenv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
       - name: Run unit tests
         run: |
           python -m unittest test_app.py
-          
+
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
@@ -51,8 +51,6 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -63,17 +61,10 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_5FE28A4573FB4E7AA93BAB05DBEF69C2 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_ABBCF904FDB84DD88FEA0A8DA4A94622 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_4C13A8EE74CF4591B578072652C717E7 }}
-
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'Air-Paradis-Sentiment-Analysis-WEB'
+          app-name: 'P7AIOPC'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
