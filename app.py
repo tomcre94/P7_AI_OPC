@@ -88,6 +88,3 @@ def feedbacknegatif():
 
 if __name__ == '__main__':
     app.run()
-
-# Inspecter les signatures du modèle USE
-print(use_model.signatures)
