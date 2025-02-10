@@ -7,11 +7,12 @@ from nltk.stem import PorterStemmer, WordNetLemmatizer
 import tensorflow as tf
 import tensorflow_hub as hub
 
+
+app = Flask(__name__)
+
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
-
-app = Flask(__name__)
 
 # Dictionnaire pour stocker les prédictions associées à chaque tweet
 prediction_cache = {}
