@@ -1,4 +1,5 @@
 tensorflow
+gunicorn
 tensorflow_hub
 absl-py==2.1.0
 alembic==1.13.2
