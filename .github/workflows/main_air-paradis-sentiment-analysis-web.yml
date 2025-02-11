@@ -45,9 +45,33 @@ jobs:
         run: |
           python -m unittest test_app.py
 
+      - name: List directory contents before zip
+        run: |
+          du -h -d 1
+          echo "Total size of directory:"
+          du -sh .
+
       - name: Create deployment package
         run: |
-          zip -r release.zip . -x "antenv/*"
+          # Exclude unnecessary files
+          zip -r release.zip . \
+            -x "antenv/*" \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x "__pycache__/*" \
+            -x "*.pyc" \
+            -x ".pytest_cache/*" \
+            -x "tests/*" \
+            -x ".gitignore"
+
+      - name: Check zip file size
+        run: ls -lh release.zip
+
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-app
+          path: release.zip
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -67,6 +91,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
+
+      - name: Display structure of downloaded files
+        run: ls -R
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
