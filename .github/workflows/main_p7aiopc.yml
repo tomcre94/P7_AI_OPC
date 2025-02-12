@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.set-artifact-name.outputs.name }}
     steps:
       - uses: actions/checkout@v4
 
@@ -51,9 +53,12 @@ jobs:
           echo "Total size of directory:"
           du -sh .
 
+      - name: Set artifact name
+        id: set-artifact-name
+        run: echo "name=python-app-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+
       - name: Create deployment package
         run: |
-          # Exclude unnecessary files
           zip -r release.zip . \
             -x "antenv/*" \
             -x ".git/*" \
@@ -64,14 +69,10 @@ jobs:
       - name: Check zip file size
         run: ls -lh release.zip
 
-      - name: Generate unique artifact name
-        id: artifact-name
-        run: echo "name=python-app-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.artifact-name.outputs.name }}
+          name: ${{ steps.set-artifact-name.outputs.name }}
           path: release.zip
           retention-days: 1
 
@@ -83,14 +84,13 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Get latest artifact
+      - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact-name }}
-          path: .
+          name: ${{ needs.build.outputs.artifact_name }}
 
       - name: Display structure of downloaded files
-        run: ls -R
+        run: ls -la
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
