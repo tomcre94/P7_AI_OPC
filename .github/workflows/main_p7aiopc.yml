@@ -67,7 +67,10 @@ jobs:
             -x "*.pyc"
 
       - name: Check zip file size
-        run: ls -lh release.zip
+        run: |
+          du -sh release.zip
+          echo "Package contents:"
+          unzip -l release.zip | head -n 20
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -89,11 +92,14 @@ jobs:
         with:
           name: ${{ needs.build.outputs.artifact_name }}
 
-      - name: Display structure of downloaded files
-        run: ls -la
-
       - name: Unzip artifact for deployment
-        run: unzip release.zip
+        run: |
+          unzip release.zip
+          rm release.zip
+
+      - name: Clean deployment directory
+        run: |
+          rm -rf __pycache__ *.pyc .git .github tests
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
