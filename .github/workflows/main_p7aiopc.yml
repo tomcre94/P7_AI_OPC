@@ -59,25 +59,21 @@ jobs:
             -x ".git/*" \
             -x ".github/*" \
             -x "__pycache__/*" \
-            -x "*.pyc" \
-            -x ".pytest_cache/*" \
-            -x "tests/*" \
-            -x ".gitignore"
+            -x "*.pyc"
 
       - name: Check zip file size
         run: ls -lh release.zip
 
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          path: release.zip
+      - name: Generate unique artifact name
+        id: artifact-name
+        run: echo "name=python-app-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: python-app
+          name: ${{ steps.artifact-name.outputs.name }}
           path: release.zip
+          retention-days: 1
 
   deploy:
     runs-on: ubuntu-latest
@@ -87,10 +83,11 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
+      - name: Get latest artifact
         uses: actions/download-artifact@v4
         with:
-          name: python-app
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: .
 
       - name: Display structure of downloaded files
         run: ls -R
