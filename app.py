@@ -2,17 +2,16 @@ from flask import Flask, render_template, request, jsonify
 import pickle
 import re
 import nltk
-
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('punkt_tab')
-
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 import tensorflow as tf
 import tensorflow_hub as hub
 import os
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('punkt_tab')
 
 # Définir le répertoire NLTK
 nltk_data_dir = os.path.join(os.getcwd(), "nltk_data")
