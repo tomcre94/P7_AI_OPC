@@ -1,3 +1,7 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
+
 name: Build and deploy Python app to Azure Web App - P7AIOPC
 
 on:
@@ -9,8 +13,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      artifact_name: ${{ steps.set-artifact-name.outputs.name }}
+    permissions:
+      contents: read #This is required for actions/checkout
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,50 +26,24 @@ jobs:
 
       - name: Create and start virtual environment
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
-
+          python -m venv venv
+          source venv/bin/activate
+      
       - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
+        
+      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-      - name: Download NLTK data
-        run: |
-          python -c "
-          import nltk
-          import os
-          nltk_data_dir = './nltk_data'
-          os.makedirs(nltk_data_dir, exist_ok=True)
-          nltk.data.path.append(nltk_data_dir)
-          nltk.download('punkt', download_dir=nltk_data_dir)
-          nltk.download('stopwords', download_dir=nltk_data_dir)
-          nltk.download('wordnet', download_dir=nltk_data_dir)
-          nltk.download('omw-1.4', download_dir=nltk_data_dir)
-          "
-
-      - name: Set artifact name
-        id: set-artifact-name
-        run: echo "name=python-app-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
-
-      - name: Create deployment package
-        run: |
-          zip -r release.zip . \
-            -x "antenv/*" \
-            -x ".git/*" \
-            -x ".github/*" \
-            -x "__pycache__/*" \
-            -x "*.pyc"
-
-      - name: List contents of release.zip for verification
-        run: unzip -l release.zip
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.set-artifact-name.outputs.name }}
-          path: release.zip
-          retention-days: 1
+          name: python-app
+          path: |
+            release.zip
+            !venv/
 
   deploy:
     runs-on: ubuntu-latest
@@ -72,28 +51,31 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build.outputs.artifact_name }}
-
-      - name: Wait for previous deployments
-        run: sleep 30
+          name: python-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Deploy to Azure Web App using FTPS
-        run: |
-          ftp -n -v -i ${{ secrets.FTPS_HOST }} <<END_SCRIPT
-          quote USER ${{ secrets.FTPS_USERNAME }}
-          quote PASS ${{ secrets.FTPS_PASSWORD }}
-          binary
-          cd site/wwwroot
-          mput *
-          bye
-          END_SCRIPT
-        env:
-          FTPS_HOST: 'waws-prod-fr-par-001.ftp.azurewebsites.windows.net'
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DDBF5C2622D94504A14A1C2F1A43AFBD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_919B532E5E62457C9ED8F8A6550CFA23 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B18AC11BF0D743CC900F52ACCE034A10 }}
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
+        with:
+          app-name: 'P7AIOPC'
+          slot-name: 'Production'
+          
