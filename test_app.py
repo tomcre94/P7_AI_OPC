@@ -17,7 +17,7 @@ class FlaskAPITestCase(unittest.TestCase):
 
     def test_predict_route(self):
         # Test de la route de prédiction (POST /predict)
-        payload = {'tweet_to_predict': 'Je suis très content aujourd\'hui!'}
+        payload = {'tweet_to_predict': 'I am very happy today!'}
         response = self.app.post('/predict', data=json.dumps(payload), content_type='application/json')
 
         # Vérifie que la réponse est OK
@@ -30,7 +30,7 @@ class FlaskAPITestCase(unittest.TestCase):
 
     def test_feedbackpositif_route(self):
         # Test de la route du feedback positif (POST /feedbackpositif)
-        payload = {'tweet_to_predict': 'Je suis très content aujourd\'hui!'}
+        payload = {'tweet_to_predict': 'I am very happy today!'}
         response = self.app.post('/feedbackpositif', data=json.dumps(payload), content_type='application/json')
 
         # Vérifie que la réponse est OK
