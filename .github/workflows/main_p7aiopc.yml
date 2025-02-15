@@ -82,32 +82,18 @@ jobs:
       - name: Wait for previous deployments
         run: sleep 30
 
-      - name: Install Azure CLI
-        run: |
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Stop Web App
-        run: |
-          az webapp stop --name P7AIOPC --resource-group rg-P7AIOPC
-          sleep 15
-
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
-        with:
-          app-name: 'P7AIOPC'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-
-      - name: Start Web App
+      - name: Deploy to Azure Web App using FTPS
         run: |
-          sleep 15
-          az webapp start --name P7AIOPC --resource-group rg-P7AIOPC
+          ftp -n -v -i ${{ secrets.FTPS_HOST }} <<END_SCRIPT
+          quote USER ${{ secrets.FTPS_USERNAME }}
+          quote PASS ${{ secrets.FTPS_PASSWORD }}
+          binary
+          cd site/wwwroot
+          mput *
+          bye
+          END_SCRIPT
+        env:
+          FTPS_HOST: 'waws-prod-fr-par-001.ftp.azurewebsites.windows.net'
