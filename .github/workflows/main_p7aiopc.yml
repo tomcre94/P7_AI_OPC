@@ -56,6 +56,9 @@ jobs:
             -x "__pycache__/*" \
             -x "*.pyc"
 
+      - name: List contents of release.zip for verification
+        run: unzip -l release.zip
+
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
