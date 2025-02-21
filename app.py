@@ -35,13 +35,9 @@ app = Flask(__name__)
 # Dictionnaire pour stocker les prédictions associées à chaque tweet
 prediction_cache = {}
 
-# Charger le modèle USE
-use_model = hub.load("https://tfhub.dev/google/universal-sentence-encoder/2")
-embed_fn = use_model.signatures['default']  # Accéder à la signature par défaut
-
-# Charger le modèle LSTM
-with open('models/model_lstm.pkl', 'rb') as f:
-    model = pickle.load(f)
+# Charger le modèle Pipeline (TF-IDF + Logistic Regression) avec joblib
+import joblib
+pipeline_model = joblib.load('models/model_pipeline.joblib')
 
 # Initialiser les outils de nettoyage de texte
 stop_words = set(stopwords.words('english'))
@@ -72,22 +68,11 @@ def predict():
     cleaned_text = clean_text(tweet_text)
     app.logger.info(f"Cleaned text: {cleaned_text}")
 
-    # Générer l'embedding USE
-    embedding = embed_fn(tf.constant([cleaned_text]))  # Utiliser la signature par défaut
-    app.logger.info(f"Embedding before extraction: {embedding}")
+    # Prédiction avec le pipeline joblib
+    prediction = pipeline_model.predict([cleaned_text])
+    app.logger.info(f"Pipeline prediction: {prediction}")
 
-    embedding = embedding['default'].numpy()  # Extraire les embeddings avec la clé correcte
-    app.logger.info(f"Embedding after extraction: {embedding}")
-
-    # Reshape pour correspondre à l'entrée du modèle LSTM
-    embedding_reshaped = embedding.reshape((1, 1, 512))  # Shape: (1, 1, 512)
-    app.logger.info(f"Embedding reshaped: {embedding_reshaped.shape}")
-
-    # Prédiction avec le modèle
-    probabilities = model.predict(embedding_reshaped)
-    prediction = (probabilities > 0.5).astype(int)
-
-    result = "Positif" if prediction[0][0] == 1 else "Négatif"
+    result = "Positif" if prediction[0] == 1 else "Négatif"
     prediction_cache[tweet_text] = result
 
     return jsonify({'prediction': result})
