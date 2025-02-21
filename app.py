@@ -1,11 +1,8 @@
 from flask import Flask, render_template, request, jsonify
-import pickle
 import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
-import tensorflow as tf
-import tensorflow_hub as hub
 import os
 
 nltk.download('punkt')
