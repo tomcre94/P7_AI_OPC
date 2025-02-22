@@ -4,7 +4,7 @@ def predict_sentiment(tweet):
     url = "https://p7aiopc-hgcrbucucpgfajez.francecentral-01.azurewebsites.net/predict"
     headers = {"Content-Type": "application/json"}
     payload = {
-        "input": tweet
+        "tweet_to_predict": tweet
     }
     
     try:
@@ -19,6 +19,6 @@ def predict_sentiment(tweet):
         return response.json()
 
 # Example usage
-tweet = "I love using Azure for my projects!"
+tweet = "I am happy"
 prediction = predict_sentiment(tweet)
 print(prediction)

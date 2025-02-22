@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/creus/OneDrive/Bureau/P7_AI_OPC/mlruns/595958087712526083/3fb4d286bcce4f3aac9675204a016c1a/artifacts
+end_time: 1740218953580
+entry_point_name: ''
+experiment_id: '595958087712526083'
+lifecycle_stage: active
+run_id: 3fb4d286bcce4f3aac9675204a016c1a
+run_name: Logistic_Regression_TFIDF
+run_uuid: 3fb4d286bcce4f3aac9675204a016c1a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740218953438
+status: 4
+tags: []
+user_id: creus

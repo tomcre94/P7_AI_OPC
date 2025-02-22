@@ -4,9 +4,14 @@ __pycache__/
 *$py.class
 *.so
 .Python
+.ipynb
+.venv
 antenv/
 venv/
 ENV/
+
+#CSV
+*.csv
 
 # NLTK
 nltk_data/

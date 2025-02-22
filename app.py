@@ -34,7 +34,7 @@ prediction_cache = {}
 
 # Charger le modèle Pipeline (TF-IDF + Logistic Regression) avec joblib
 import joblib
-pipeline_model = joblib.load('models/model_pipeline.joblib')
+pipeline_model = joblib.load('model_pipeline.joblib')
 
 # Initialiser les outils de nettoyage de texte
 stop_words = set(stopwords.words('english'))
