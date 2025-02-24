@@ -4,6 +4,9 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 import os
+import joblib
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+import logging
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -33,7 +36,6 @@ app = Flask(__name__)
 prediction_cache = {}
 
 # Charger le modèle Pipeline (TF-IDF + Logistic Regression) avec joblib
-import joblib
 pipeline_model = joblib.load('model_pipeline.joblib')
 
 # Initialiser les outils de nettoyage de texte
@@ -85,8 +87,10 @@ def feedbacknegatif():
 
     if tweet_text in prediction_cache:
         app.logger.error(f'{tweet_text}: {prediction_cache[tweet_text]}')
+        logger.warning(f'Negative feedback received for tweet: {tweet_text}')
     else:
         app.logger.error(f'Tweet non trouvé dans le cache: {tweet_text}')
+        logger.warning(f'Tweet not found in cache: {tweet_text}')
 
     return "true"
 
