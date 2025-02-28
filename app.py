@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, jsonify
 import re
 import nltk
+from flask import Flask, render_template, request, jsonify
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 import os
@@ -31,6 +31,11 @@ def download_nltk_data():
 download_nltk_data()
 
 app = Flask(__name__)
+
+# Configurer le logger pour Application Insights
+logger = logging.getLogger(__name__)
+logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=YOUR_INSTRUMENTATION_KEY'))
+logger.setLevel(logging.INFO)
 
 # Dictionnaire pour stocker les prédictions associées à chaque tweet
 prediction_cache = {}
