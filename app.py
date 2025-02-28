@@ -33,8 +33,11 @@ download_nltk_data()
 app = Flask(__name__)
 
 # Configurer le logger pour Application Insights
+instrumentation_key = os.getenv('AZURE_INSTRUMENTATION_KEY')
+if not instrumentation_key:
+    raise ValueError("Invalid instrumentation key.")
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=YOUR_INSTRUMENTATION_KEY'))
+logger.addHandler(AzureLogHandler(connection_string=f'InstrumentationKey={instrumentation_key}'))
 logger.setLevel(logging.INFO)
 
 # Dictionnaire pour stocker les prédictions associées à chaque tweet
@@ -92,10 +95,10 @@ def feedbacknegatif():
 
     if tweet_text in prediction_cache:
         app.logger.error(f'{tweet_text}: {prediction_cache[tweet_text]}')
-        logger.warning(f'Negative feedback received for tweet: {tweet_text}')
+        app.logger.warning(f'Negative feedback received for tweet: {tweet_text}')
     else:
         app.logger.error(f'Tweet non trouvé dans le cache: {tweet_text}')
-        logger.warning(f'Tweet not found in cache: {tweet_text}')
+        app.logger.warning(f'Tweet not found in cache: {tweet_text}')
 
     return "true"
 
