@@ -36,7 +36,7 @@ jobs:
           AZURE_INSTRUMENTATION_KEY: ${{ secrets.AZURE_INSTRUMENTATION_KEY }}
         run: |
           source venv/bin/activate
-          pytest  # Exécutez pytest
+          pytest
 
       - name: Zip artifact for deployment
         run: |
